@@ -53,7 +53,7 @@ func meanSpeed(steps int, duration time.Duration) float64 {
 		return 0
 	}
 	dist := distance(steps)
-	return float64(dist) / float64(duration.Hours())
+	return dist / duration.Hours()
 }
 
 // ShowTrainingInfo возвращает строку с информацией о тренировке.
@@ -63,11 +63,6 @@ func meanSpeed(steps int, duration time.Duration) float64 {
 // data string - строка с данными.
 // weight, height float64 — вес и рост пользователя.
 
-// Тип тренировки: Бег
-// Длительность: 0.75 ч.
-// Дистанция: 10.00 км.
-// Скорость: 13.34 км/ч
-// Сожгли калорий: 18621.75
 func TrainingInfo(data string, weight, height float64) string {
 	steps, activity, duration, err := parseTraining(data)
 	if err != nil {
@@ -76,20 +71,22 @@ func TrainingInfo(data string, weight, height float64) string {
 	dist := distance(steps)
 	speed := meanSpeed(steps, duration)
 
+	var calories float64
+
 	switch activity {
 	case "Бег":
-		calories := RunningSpentCalories(steps, weight, duration)
-		return fmt.Sprintf(
-			"Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %2.f км.\nСкорость: %2.f км/ч\nСожгли калорий: %2.f",
-			activity, duration.Hours(), dist, speed, calories)
+		calories = RunningSpentCalories(steps, weight, duration)
+
 	case "Ходьба":
-		calories := WalkingSpentCalories(steps, weight, height, duration)
-		return fmt.Sprintf(
-			"Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %2.f км.\nСкорость: %2.f км/ч\nСожгли калорий: %2.f",
-			activity, duration.Hours(), dist, speed, calories)
+
+		calories = WalkingSpentCalories(steps, weight, height, duration)
+
 	default:
 		return fmt.Sprint("неизвестный тип тренировки")
 	}
+	return fmt.Sprintf(
+		"Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %2.f км.\nСкорость: %2.f км/ч\nСожгли калорий: %2.f",
+		activity, duration.Hours(), dist, speed, calories)
 
 }
 
